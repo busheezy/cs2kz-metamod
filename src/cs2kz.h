@@ -72,6 +72,7 @@ public:
 	CGlobalVars unmodifiedServerGlobals;
 	bool unloading = false;
 	bool loading = true;
+	bool shuttingDown = false;
 
 private:
 	void UpdateSelfMD5();

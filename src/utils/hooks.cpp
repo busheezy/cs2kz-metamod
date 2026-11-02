@@ -265,6 +265,14 @@ static KHook::Return<void> GameServerSteamAPIDeactivatedPre(ISource2Server *pThi
 
 static KHook::Virtual<ISource2Server, void> gameServerSteamAPIDeactivatedHook(GameServerSteamAPIDeactivatedPre, nullptr);
 
+static KHook::Return<void> ServerShutdownPre(ISource2Server *pThis)
+{
+	g_KZPlugin.shuttingDown = true;
+	return {KHook::Action::Ignore};
+}
+
+static KHook::Virtual<ISource2Server, void> serverShutdownHook(ServerShutdownPre, nullptr);
+
 // ============================================================
 // ISource2GameClients hooks
 // ============================================================
@@ -1472,6 +1480,9 @@ void hooks::Initialize()
 	gameServerSteamAPIDeactivatedHook.Configure(&ISource2Server::GameServerSteamAPIDeactivated);
 	gameServerSteamAPIDeactivatedHook.Add(interfaces::pServer);
 
+	serverShutdownHook.Configure(&ISource2Server::Shutdown);
+	serverShutdownHook.Add(interfaces::pServer);
+
 	clientConnectHook.Configure(&ISource2GameClients::ClientConnect);
 	clientConnectHook.Add(g_pSource2GameClients);
 
@@ -1576,6 +1587,7 @@ void hooks::Cleanup()
 	gameFrameHook.ClearHooks();
 	gameServerSteamAPIActivatedHook.ClearHooks();
 	gameServerSteamAPIDeactivatedHook.ClearHooks();
+	serverShutdownHook.ClearHooks();
 	clientConnectHook.ClearHooks();
 	onClientConnectedHook.ClearHooks();
 	clientFullyConnectHook.ClearHooks();

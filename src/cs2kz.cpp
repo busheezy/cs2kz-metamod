@@ -173,7 +173,10 @@ bool KZPlugin::Unload(char *error, size_t maxlen)
 	LoggingSystem_UnregisterLoggingListener(&g_KZLoggingListener);
 	kz_log_to_file.Set(false);
 	g_KZLoggingListener.CheckFile();
-	ConVar_Unregister();
+	if (!this->shuttingDown)
+	{
+		ConVar_Unregister();
+	}
 	return true;
 }
 
